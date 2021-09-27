@@ -9,20 +9,27 @@ lon = list(data["LON"])
 elev = list(data["ELEV"])
 name = list(data["NAME"])
 
-#formatting
+
+#formatting and color chnage of popups
 html = """
 Volcano name:<br>
 <a href="https://www.google.com/search?q=%%22%s%%22" target="_blank">%s</a><br>
 Height: %s m
 """
+def ColorChange(elevation):
+    if elevation < 1000:
+        return 'green'
+    elif 1000 <= elevation < 3000:
+        return 'orange'
+    else:
+        return 'red'
 
 #map creation
 map = folium.Map(location= [40.431874, -98.525470], zoom_start=5, tiles = "Stamen Terrain")
 fg = folium.FeatureGroup(name="My Map")
-
 for lt, ln, el, name in zip(lat, lon, elev, name):
     iframe = folium.IFrame(html=html % (name, name, el), width=200, height=100)
-    fg.add_child(folium.Marker(location=[lt, ln], popup=folium.Popup(iframe), icon = folium.Icon(color = "green"))) 
- 
+    fg.add_child(folium.CircleMarker(location=[lt, ln],radius= 7, popup=folium.Popup(iframe), color = ColorChange(el)))
+
 map.add_child(fg)
 map.save("Map_adv_popups.html")
